@@ -447,7 +447,7 @@ func newRestoreEtcdClient(ctx context.Context, vConfig *config.VirtualClusterCon
 	// * embedded etcd: delete the files locally and make sure revision is not decreasing, this is important as otherwise watches will not work correctly
 	// * deploy etcd: range delete request
 	// * embedded database: delete the files locally and make sure revision is not decreasing, this is important as otherwise watches will not work correctly
-	// * external database: we can't so we skip and then check later if there are any already
+	// * external database: range delete request via kine, which exposes the etcd v3 API
 	if vConfig.BackingStoreType() == vclusterconfig.StoreTypeEmbeddedDatabase {
 		// get latest revision from database
 		latestRevision, err := getLatestRevisionSQLite(ctx, constants.K8sSqliteDatabase)
@@ -522,8 +522,10 @@ func newRestoreEtcdClient(ctx context.Context, vConfig *config.VirtualClusterCon
 		return nil, revertBackup, err
 	}
 
-	// delete contents in external etcd
-	if vConfig.BackingStoreType() == vclusterconfig.StoreTypeDeployedEtcd || vConfig.BackingStoreType() == vclusterconfig.StoreTypeExternalEtcd {
+	// delete contents in external etcd or external database (via kine, which exposes the etcd v3 API)
+	if vConfig.BackingStoreType() == vclusterconfig.StoreTypeDeployedEtcd ||
+		vConfig.BackingStoreType() == vclusterconfig.StoreTypeExternalEtcd ||
+		vConfig.BackingStoreType() == vclusterconfig.StoreTypeExternalDatabase {
 		klog.FromContext(ctx).Info("Delete existing etcd data before restore...")
 		err = etcdClient.DeletePrefix(ctx, "/")
 		if err != nil {
