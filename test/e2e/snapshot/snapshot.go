@@ -358,14 +358,14 @@ var _ = Describe("snapshot and restore", Ordered, func() {
 
 			// check configmap is deleted
 			Eventually(func(ctx context.Context) error {
-				_, err := f.VClusterClient.CoreV1().ConfigMaps(testNamespaceName).List(ctx, metav1.ListOptions{
-					LabelSelector: "snapshot=restore",
-				})
-
-				if err != nil {
+				_, err := f.VClusterClient.CoreV1().ConfigMaps(testNamespaceName).Get(ctx, configMapToRestore.Name, metav1.GetOptions{})
+				if kerrors.IsNotFound(err) {
 					return nil
 				}
-				return err
+				if err != nil {
+					return err
+				}
+				return fmt.Errorf("configmap %s still exists", configMapToRestore.Name)
 			}).WithContext(ctx).
 				WithPolling(time.Second).
 				WithTimeout(framework.PollTimeout).
@@ -376,14 +376,14 @@ var _ = Describe("snapshot and restore", Ordered, func() {
 
 			// check secret is deleted
 			Eventually(func(ctx context.Context) error {
-				_, err := f.VClusterClient.CoreV1().Secrets(testNamespaceName).List(ctx, metav1.ListOptions{
-					LabelSelector: "snapshot=restore",
-				})
-
-				if err != nil {
+				_, err := f.VClusterClient.CoreV1().Secrets(testNamespaceName).Get(ctx, secretToRestore.Name, metav1.GetOptions{})
+				if kerrors.IsNotFound(err) {
 					return nil
 				}
-				return err
+				if err != nil {
+					return err
+				}
+				return fmt.Errorf("secret %s still exists", secretToRestore.Name)
 			}).WithContext(ctx).
 				WithPolling(time.Second).
 				WithTimeout(framework.PollTimeout).
@@ -394,14 +394,14 @@ var _ = Describe("snapshot and restore", Ordered, func() {
 
 			// check deployment is deleted
 			Eventually(func(ctx context.Context) error {
-				_, err := f.VClusterClient.CoreV1().Secrets(testNamespaceName).List(ctx, metav1.ListOptions{
-					LabelSelector: "snapshot=restore",
-				})
-
-				if err != nil {
+				_, err := f.VClusterClient.AppsV1().Deployments(testNamespaceName).Get(ctx, deploymentToRestore.Name, metav1.GetOptions{})
+				if kerrors.IsNotFound(err) {
 					return nil
 				}
-				return err
+				if err != nil {
+					return err
+				}
+				return fmt.Errorf("deployment %s still exists", deploymentToRestore.Name)
 			}).WithContext(ctx).
 				WithPolling(time.Second).
 				WithTimeout(framework.PollTimeout).
