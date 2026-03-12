@@ -56,5 +56,7 @@ vcluster restore my-vcluster container:///data/my-local-snapshot.tar.gz
 	// add storage flags
 	pod.AddFlags(cobraCmd.Flags(), &cmd.Pod, true)
 	cobraCmd.Flags().BoolVar(&cmd.RestoreVolumes, "restore-volumes", false, "Restore volumes from volume snapshots")
+	cobraCmd.Flags().StringVarP(&cmd.Snapshot.Azure.SubscriptionID, "azure-subscription-id", "", "", "Azure subscription ID where the storage account is located")
+	cobraCmd.Flags().StringVarP(&cmd.Snapshot.Azure.ResourceGroup, "azure-resource-group", "", "", "Azure resource group where the storage account is located")
 	return cobraCmd
 }
