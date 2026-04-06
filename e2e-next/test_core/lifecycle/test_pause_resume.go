@@ -15,7 +15,7 @@ import (
 	"github.com/loft-sh/vcluster/pkg/util/random"
 )
 
-var _ = Describe("Tenant cluster pause and resume", labels.Core, labels.PR, func() {
+var _ = Describe("Tenant cluster lifecycle - pause and resume", labels.Core, labels.PR, func() {
 	Context("pause and resume a running tenant cluster", Ordered, func() {
 		// Ordered because resume depends on the pause from the prior spec.
 		var (

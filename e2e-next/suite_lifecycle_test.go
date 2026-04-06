@@ -1,7 +1,7 @@
-// Suite: cli
-// Tests vCluster CLI command lifecycle (create, list, delete, pause, resume, etc.).
+// Suite: lifecycle
+// Tests tenant cluster lifecycle (create, list, delete, pause, resume).
 // No shared vCluster needed — tests manage their own instances.
-// Run: just run-e2e 'cli'
+// Run: ginkgo -v --focus='Tenant cluster lifecycle' ./e2e-next
 package e2e_next
 
 import (
